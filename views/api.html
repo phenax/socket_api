@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>API</title>
+</head>
+<body>
+
+<div id="state"><{current}></div>
+<script src='/socket.io/socket.io.js'></script>
+<script>
+var socket= io.connect();
+
+var $state= document.getElementById('state');
+
+socket.on('transmission',function(data) {
+	$state.textContent= JSON.stringify(data);
+});
+
+</script>
+</body>
+</html>

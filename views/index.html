@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Interface</title>
+<style>
+html,body {
+	margin:0;
+	padding:0;
+	background-color:#222;
+}
+
+main {
+	text-align:center;
+	padding-top:100px;
+}
+
+.btn {
+	border:none;
+	outline:none;
+	color:#555;
+	padding:20px 50px;
+	font-size:3em;
+	cursor:pointer;
+	text-transform: uppercase;
+}
+
+.on {
+	background-color:#51e980;
+	color:#fff;
+}
+
+.off {
+	background-color:#F44336;
+	color:#fff;
+}
+
+.info {
+	position:absolute;
+	top:0;
+	left:0;
+	width:100%;
+	padding:20px 0;
+	color:#fff;
+	background-color:rgba(0,0,0,.5);
+}
+
+</style>
+</head>
+<body>
+<main>
+	<div class='info' id='info'>The device is now in <{current_state}> state</div>
+	<button class='btn <{current}>' id='toggle' data-state='<{current}>'><{current}></button>
+</main>
+<script src='/socket.io/socket.io.js'></script>
+<script>
+var $btn= document.getElementById('toggle');
+var $info= document.getElementById('info');
+
+var socket= io.connect();
+
+var change_state= function(state) {
+	var text= (state == 'on')? 'off': 'on';
+	var color= (text == 'on')? 'blue': 'red'
+	$btn.dataset.state= text;
+	$btn.textContent= text;
+	$btn.classList.remove('off','on');
+	$btn.classList.add(text);
+	$info.textContent= "The device is now in "+state+" state";
+}
+
+socket.on('transmission', function(data) {
+	change_state(data.state);
+});
+
+document.addEventListener('DOMContentLoaded', function() {	
+
+	$btn.addEventListener('click', function() {
+		var state= $btn.dataset.state= ($btn.dataset.state == 'on')? 'on': 'off';
+
+		change_state(state);
+
+		socket.emit('recieve', {
+			state: state
+		});
+	});
+
+});
+</script>
+</body>
+</html>
